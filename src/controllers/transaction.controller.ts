@@ -50,7 +50,7 @@ const createTransaction = async (req: ICreateTransactionRequest, res: Response) 
     const authEmail : string = getAuthEmail(req)
 
     if (receiverEmail === authEmail) return response.validation(res, {receiverEmail}, 'The transaction is made to yourself!!', 422)
-
+    
     if (senderEmail !== authEmail) return response.validation(res, {receiverEmail}, 'The sender email must be yours.', 422)
 
     const user : UserModel = await User.findOne({ email: senderEmail });
@@ -71,22 +71,22 @@ const createTransaction = async (req: ICreateTransactionRequest, res: Response) 
 };
 
 /**
- * Logged-in user can confirm his transaction made by him.
+ * Logged-in user can confirm the transactions made by himself.
  *
  * @param req
  * @param res
  */
 const confirmTransaction = async (req: IConfirmTransactionRequest, res: Response) => {
     const authEmail : string = getAuthEmail(req)
+    const tenMinutesAgo : Date  = new Date(Date.now() - ( Number(process.env.TRANSACTION_EXPIRE_TIME) * 60 * 1000))
+    const transaction : TransactionModel  = await Transaction.findOne({
+        _id: req.body.transactionId,
+        senderEmail: authEmail,
+        status:  TransactionStatus.PENDING,
+        createdAt: { $lt: tenMinutesAgo }
+    });
 
-    //TODO create a query to check on each case at once
-    const transaction : TransactionModel = await Transaction.findOne({ _id: req.body.transactionId });
-
-    if (transaction.senderEmail !== authEmail) return response.validation(res, {transactionId: req.body.transactionId}, 'You cant confirm this transaction.', 422)
-
-    if ( transaction.status !== TransactionStatus.PENDING || transaction.createdAt.getTime() < (Date.now() - (parseInt(process.env.TRANSACTION_EXPIRE_TIME) * 60 * 1000)) ) {
-        return response.validation(res, {transactionId: req.body.transactionId}, 'Transaction is not conformable.', 422)
-    }
+    if (! transaction) return response.validation(res, {transactionId: req.body.transactionId}, 'You cant confirm this transaction.', 422)
 
     // set as confirmed
     transaction.status = TransactionStatus.CONFIRMED
@@ -101,18 +101,18 @@ const confirmTransaction = async (req: IConfirmTransactionRequest, res: Response
 }
 
 /**
- * Logged-in user can reject his transaction made by him.
+ * Logged-in user can reject the transactions made by himself.
  *
  * @param req
  * @param res
  */
 const rejectTransaction = async (req: IConfirmTransactionRequest, res: Response) => {
     const authEmail : string = getAuthEmail(req)
-    const transaction : TransactionModel = await Transaction.findOne({ _id: req.body.transactionId });
-
-    if (transaction.senderEmail !== authEmail) return response.validation(res, {transactionId: req.body.transactionId}, 'You cant Reject this transaction.', 422)
-
-    if (transaction.status !== TransactionStatus.PENDING) return response.validation(res, {transactionId: req.body.transactionId}, 'Transaction is not rejectable.', 422)
+    const transaction : TransactionModel  = await Transaction.findOne({
+        _id: req.body.transactionId,
+        senderEmail: authEmail,
+        status:  TransactionStatus.PENDING
+    });
 
     // set as rejected
     transaction.status = TransactionStatus.REJECTED
