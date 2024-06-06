@@ -1,4 +1,4 @@
-import mongoose, {Document, Schema, SchemaOptions} from 'mongoose';
+import mongoose, {Document, Schema} from 'mongoose';
 
 export enum TransactionStatus {
     PENDING = "pending",

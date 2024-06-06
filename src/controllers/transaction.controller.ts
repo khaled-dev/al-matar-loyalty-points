@@ -1,7 +1,5 @@
-import { NextFunction, Request, Response } from 'express';
-import Transaction, {TransactionStatus} from '../models/transaction.model';
-import mongoose from "mongoose";
-
+import { Request, Response } from 'express';
+import Transaction, {TransactionModel} from '../models/transaction.model';
 
 interface ITransferRequest extends Request {
     body: {
@@ -14,7 +12,7 @@ interface ITransferRequest extends Request {
 export const createTransaction = async (req: ITransferRequest, res: Response) => {
     const { senderEmail, receiverEmail, points } = req.body;
 
-    const transaction  = new Transaction({
+    const transaction : TransactionModel  = new Transaction({
         senderEmail,
         receiverEmail,
         points,

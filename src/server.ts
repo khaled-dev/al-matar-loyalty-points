@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 import { config } from './config/config';
 import Logging from './config/logging';
 import transactionRoutes from './routes/transaction.route';
+import authRoutes from './routes/auth.route';
 
 const router = express();
 
@@ -29,6 +30,7 @@ const StartServer = () => {
     router.use(express.json());
 
     router.use('/transactions', transactionRoutes);
+    router.use('/auth', authRoutes);
 
     router.use((req, res, next) => {
         const error = new Error('Not found');
