@@ -5,6 +5,7 @@ import { config } from './config/config';
 import Logging from './config/logging';
 import transactionRoutes from './routes/transaction.route';
 import authRoutes from './routes/auth.route';
+import rejectTransactions from './jobs/transaction.job'
 
 const router = express();
 
@@ -12,6 +13,7 @@ mongoose.connect(config.mongo.url, { retryWrites: true, w: 'majority' })
     .then(() => {
         Logging.info('Mongo connected successfully.');
         StartServer();
+        rejectTransactions.rejectTransactions()
     })
     .catch((error) => Logging.error(error));
 
