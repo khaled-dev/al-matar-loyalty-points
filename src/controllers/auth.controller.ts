@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import User, {UserModel} from '../models/user.model';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import response from "../http/response";
 
 
 interface IRegisterRequest extends Request {
@@ -33,11 +34,12 @@ const register = async (req: IRegisterRequest, res: Response) => {
 
     const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET!, { expiresIn: process.env.JWT_TOKEN_EXPIRE });
 
-    res.status(201).send({ message: 'Registration successful', token });
+    response.success(res, {token}, 'Registration successful', 201)
 };
 
 const login = async (req: ILoginRequest, res: Response) => {
 
+    //TODO: move it to validation
     const user : UserModel = await User.findOne({ email: req.body.email });
 
     if (! user) return res.status(404).send({ message: 'User not found' });

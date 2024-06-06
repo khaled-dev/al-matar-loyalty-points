@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import Transaction, {TransactionModel} from '../models/transaction.model';
+import response from "../http/response";
 
 interface ITransferRequest extends Request {
     body: {
@@ -18,10 +19,9 @@ export const createTransaction = async (req: ITransferRequest, res: Response) =>
         points,
     });
 
-    return transaction
-        .save()
-        .then((transaction) => res.status(201).json({ transaction }))
-        .catch((error) => res.status(500).json({ error }));
+    await transaction.save()
+
+    response.success(res, {transaction}, 'Bad Request', 422)
 };
 
 

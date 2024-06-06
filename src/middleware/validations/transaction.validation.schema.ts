@@ -5,6 +5,8 @@ export const createValidationSchema = Joi.object<ITransaction>(
     {
         senderEmail: Joi.string().required(),
         receiverEmail: Joi.string().required(),
+        // TODO: validate it exsists
+        // TODO: it has enough points
         // receiverEmail: Joi.string().required().custom(  (value, helpers) => {
         //     // check if exists
         //     return helpers.error('any.invalid');
