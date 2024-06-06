@@ -83,7 +83,7 @@ const confirmTransaction = async (req: IConfirmTransactionRequest, res: Response
         _id: req.body.transactionId,
         senderEmail: authEmail,
         status:  TransactionStatus.PENDING,
-        createdAt: { $lt: tenMinutesAgo }
+        createdAt: { $gt: tenMinutesAgo }
     });
 
     if (! transaction) return response.validation(res, {transactionId: req.body.transactionId}, 'You cant confirm this transaction.', 422)
