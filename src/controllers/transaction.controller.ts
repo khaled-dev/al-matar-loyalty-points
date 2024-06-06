@@ -7,7 +7,6 @@ import User, {UserModel} from "../models/user.model";
 
 interface ICreateTransactionRequest extends Request {
     body: {
-        senderEmail: string;
         receiverEmail: string;
         points: number;
     };
@@ -46,19 +45,17 @@ const listTransactions = async (req: Request, res: Response) => {
  * @param res
  */
 const createTransaction = async (req: ICreateTransactionRequest, res: Response) => {
-    const { senderEmail, receiverEmail, points } = req.body;
+    const { receiverEmail, points } = req.body;
     const authEmail : string = getAuthEmail(req)
 
     if (receiverEmail === authEmail) return response.validation(res, {receiverEmail}, 'The transaction is made to yourself!!', 422)
-    
-    if (senderEmail !== authEmail) return response.validation(res, {receiverEmail}, 'The sender email must be yours.', 422)
 
-    const user : UserModel = await User.findOne({ email: senderEmail });
+    const user : UserModel = await User.findOne({ email: authEmail });
     if (user.points < points) return response.validation(res, {points}, 'You dont have enough points.', 422)
 
 
     const transaction : TransactionModel  = new Transaction({
-        senderEmail,
+        senderEmail: authEmail,
         receiverEmail,
         points,
     });
