@@ -1,5 +1,5 @@
-import { Request, Response } from 'express';
-import Transaction, {TransactionModel} from '../models/transaction.model';
+import {Request, Response} from 'express';
+import Transaction, {TransactionModel, TransactionStatus} from '../models/transaction.model';
 import response from "../http/response";
 import jwt from "jsonwebtoken";
 import User, {UserModel} from "../models/user.model";
@@ -47,7 +47,7 @@ const listTransactions = async (req: Request, res: Response) => {
  */
 const createTransaction = async (req: ICreateTransactionRequest, res: Response) => {
     const { senderEmail, receiverEmail, points } = req.body;
-    const authEmail = getAuthEmail(req)
+    const authEmail : string = getAuthEmail(req)
 
     if (receiverEmail === authEmail) return response.validation(res, {receiverEmail}, 'The transaction is made to yourself!!', 422)
 
@@ -77,19 +77,51 @@ const createTransaction = async (req: ICreateTransactionRequest, res: Response) 
  * @param res
  */
 const confirmTransaction = async (req: IConfirmTransactionRequest, res: Response) => {
+    // validate input (transaction id)
+
+    // virfy it's sent by me
+    const authEmail : string = getAuthEmail(req)
+    const transaction : TransactionModel = await Transaction.findById({ _id: req.body.transactionId });
+
+    if (transaction.senderEmail !== authEmail) return response.validation(res, {transactionId: req.body.transactionId}, 'You cant confirm this transaction.', 422)
+
+    // veirfy the pending state
+    // virfy the time less than [10m]->env-var,
+    if ( transaction.status !== TransactionStatus.PENDING || transaction.createdAt.getTime() < (Date.now() - (parseInt(process.env.TRANSACTION_EXPIRE_TIME) * 60 * 1000)) ) {
+        return response.validation(res, {transactionId: req.body.transactionId}, 'Transaction is not conformable.', 422)
+    }
+
+    // change state
+    transaction.status = TransactionStatus.CONFIRMED
+    await transaction.save()
+
+    // sum the points
+    const receiver : UserModel = await User.findOne({ email: transaction.receiverEmail });
+    receiver.points += transaction.points
+    await receiver.save()
+
+    response.success(res, {transaction}, 'Transaction Confirmed')
+}
+
+/**
+ * Logged-in user can reject his transaction made by him.
+ *
+ * @param req
+ * @param res
+ */
+const rejectTransaction = async (req: IConfirmTransactionRequest, res: Response) => {
     // virfy it's sent by me
 
     // veirfy the pending state
 
 
-    // virfy the time less than [10m]->env-var,
+    // virfy the time less than [10m]->env-var, --> no need for this
 
 
     // change state
-    // sum the points
+    // sum the points back to the sender
 
 }
 
 
-
-export  default { createTransaction, listTransactions, confirmTransaction};
+export  default { createTransaction, listTransactions, confirmTransaction, rejectTransaction};

@@ -23,6 +23,9 @@ const TransactionSchema : Schema = new Schema(
 );
 
 
-export interface TransactionModel extends ITransaction, Document {}
+export interface TransactionModel extends ITransaction, Document {
+    createdAt: Date,
+    updatedAt: Date,
+}
 
 export default mongoose.model<TransactionModel>('Transaction', TransactionSchema)

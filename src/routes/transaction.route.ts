@@ -9,6 +9,7 @@ const router = express.Router();
 router.post('/', authMiddleware(), ValidateJoi(createTransactionValidationSchema), controller.createTransaction);
 router.get('/', authMiddleware(), controller.listTransactions);
 router.put('/confirm', authMiddleware(), controller.confirmTransaction);
+router.put('/reject', authMiddleware(), controller.rejectTransaction);
 
 
 export = router;
