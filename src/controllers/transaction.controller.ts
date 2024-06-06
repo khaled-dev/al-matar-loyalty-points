@@ -4,6 +4,7 @@ import response from "../http/response";
 import jwt from "jsonwebtoken";
 import transactionView from "../views/transaction.view";
 import User, {UserModel} from "../models/user.model";
+import transactionFactory from "../models/factory/transaction.factory";
 
 interface ICreateTransactionRequest extends Request {
     body: {
@@ -53,16 +54,11 @@ const createTransaction = async (req: ICreateTransactionRequest, res: Response) 
     const user : UserModel = await User.findOne({ email: authEmail });
     if (user.points < points) return response.validation(res, {points}, 'You dont have enough points.', 422)
 
-
-    const transaction : TransactionModel  = new Transaction({
+    const transaction : TransactionModel  = await transactionFactory.create({
         senderEmail: authEmail,
         receiverEmail,
         points,
-    });
-    await transaction.save()
-
-    user.points -= points;
-    await user.save()
+    }, user)
 
     response.success(res, transactionView.one(transaction), 'points transferred successfully')
 };
