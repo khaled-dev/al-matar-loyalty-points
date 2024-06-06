@@ -19,7 +19,7 @@ export interface ITransactionUpdate {
 
 const TransactionSchema : Schema = new Schema(
     {
-        senderEmail: { type: String, required: true },
+        senderEmail: { type: String, required: true, index: true },
         receiverEmail: { type: String, required: true },
         points: { type: Number, required: true },
         status: { type: String, default: TransactionStatus.PENDING }
