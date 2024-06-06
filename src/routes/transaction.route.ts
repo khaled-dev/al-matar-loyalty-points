@@ -7,7 +7,8 @@ import {authMiddleware} from "../middleware/auth.middleware";
 const router = express.Router();
 
 router.post('/', authMiddleware(), ValidateJoi(createTransactionValidationSchema), controller.createTransaction);
-// router.post('/confirm',  controller.confirmTransaction);
+router.get('/', authMiddleware(), controller.listTransactions);
+router.put('/confirm', authMiddleware(), controller.confirmTransaction);
 
 
 export = router;
