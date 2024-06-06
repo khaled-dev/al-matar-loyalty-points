@@ -81,7 +81,7 @@ const confirmTransaction = async (req: IConfirmTransactionRequest, res: Response
 
     // virfy it's sent by me
     const authEmail : string = getAuthEmail(req)
-    const transaction : TransactionModel = await Transaction.findById({ _id: req.body.transactionId });
+    const transaction : TransactionModel = await Transaction.findOne({ _id: req.body.transactionId });
 
     if (transaction.senderEmail !== authEmail) return response.validation(res, {transactionId: req.body.transactionId}, 'You cant confirm this transaction.', 422)
 
@@ -101,6 +101,11 @@ const confirmTransaction = async (req: IConfirmTransactionRequest, res: Response
     await receiver.save()
 
     response.success(res, {transaction}, 'Transaction Confirmed')
+}
+
+
+const updateTransactionState = (req: Request, ) => {
+
 }
 
 /**

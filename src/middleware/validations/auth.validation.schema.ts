@@ -1,6 +1,5 @@
 import Joi from "joi";
 import User, {IUser, UserModel} from "../../models/user.model";
-import bcrypt from "bcrypt";
 
 export const registerValidationSchema =  Joi.object<IUser>({
         name: Joi.string().required().max(225),

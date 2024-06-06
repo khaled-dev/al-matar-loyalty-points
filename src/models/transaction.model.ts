@@ -13,6 +13,10 @@ export interface ITransaction {
     status: TransactionStatus,
 }
 
+export interface ITransactionUpdate {
+    transactionId: string,
+}
+
 const TransactionSchema : Schema = new Schema(
     {
         senderEmail: { type: String, required: true },

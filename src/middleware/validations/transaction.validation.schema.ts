@@ -1,6 +1,7 @@
 import Joi from "joi";
-import {ITransaction} from "../../models/transaction.model";
+import Transaction, {ITransaction, ITransactionUpdate, TransactionModel} from "../../models/transaction.model";
 import User, {UserModel} from "../../models/user.model";
+import {isValidObjectId} from "mongoose";
 
 export const createTransactionValidationSchema = Joi.object<ITransaction>(
     {
@@ -13,7 +14,7 @@ export const createTransactionValidationSchema = Joi.object<ITransaction>(
 
             return true
         }),
-        receiverEmail: Joi.string().required().email() .external(async (value, helpers) => {
+        receiverEmail: Joi.string().required().email().external(async (value, helpers) => {
             let user : UserModel = await User.findOne({ email: value }).exec()
 
             if (! user) {
@@ -23,4 +24,20 @@ export const createTransactionValidationSchema = Joi.object<ITransaction>(
             return true
         }),
         points: Joi.number().positive().required(),
+    });
+
+export const updateValidationSchema =  Joi.object<ITransactionUpdate>(
+    {
+        transactionId: Joi.string().required().hex().external(async (value, helpers) => {
+
+            if (! isValidObjectId(value)) {
+                return helpers.message( {external: '{#label} is not exist' })
+            }
+
+            if (! await Transaction.findById({ _id: value }).exec()) {
+                return helpers.message( {external: '{#label} is not exist' })
+            }
+
+            return true
+        }),
     });
