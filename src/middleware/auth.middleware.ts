@@ -3,9 +3,10 @@ import Logging from "../config/logging";
 import response from "../http/response";
 import jwt from 'jsonwebtoken';
 
-export const auth = () => {
+export const authMiddleware = () => {
     return async (req: Request, res: Response, next: NextFunction) => {
-        let token : any = res.getHeader('access-token')
+        let authHeader : any = req.headers['authorization']
+        const token = authHeader && authHeader.split(' ')[1]
 
         if (! token) {
             return response.error(res, {}, 'Unauthorized', 401)
