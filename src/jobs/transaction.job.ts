@@ -2,11 +2,10 @@ import Transaction, {TransactionModel, TransactionStatus} from "../models/transa
 import User, {UserModel} from "../models/user.model";
 import {scheduleJob} from "node-schedule/lib/schedule";
 import Logging from "../config/logging";
-import mongoose, {ClientSession, Document, Schema} from 'mongoose';
 
 
 const rejectTransactions = async () => {
-    scheduleJob('*/3 * * * * *', async () => {
+    scheduleJob('59 * * * * *', async () => {
         Logging.info('...................')
         Logging.info('..CronJob Running..')
         Logging.info('...................')
