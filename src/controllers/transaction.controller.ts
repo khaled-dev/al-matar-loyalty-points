@@ -11,7 +11,7 @@ interface ITransferRequest extends Request {
     };
 }
 
-export const createTransfer = async (req: ITransferRequest, res: Response) => {
+export const createTransaction = async (req: ITransferRequest, res: Response) => {
     const { senderEmail, receiverEmail, points } = req.body;
 
     const transaction  = new Transaction({
@@ -27,4 +27,4 @@ export const createTransfer = async (req: ITransferRequest, res: Response) => {
 };
 
 
-export default { createTransfer };
+export default { createTransaction };

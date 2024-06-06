@@ -1,12 +1,12 @@
 import express from 'express';
 import controller from '../controllers/transaction.controller';
-import {Schema, ValidateJoi} from "../middleware/Joi";
-// import { Schemas, ValidateJoi } from '../middleware/Joi';
+import {ValidateJoi} from "../middleware/Joi";
+import {transactionValidationSchema} from "../middleware/validations/transaction.validation.schema";
 
 const router = express.Router();
 
-router.post('/create', ValidateJoi(Schema.transaction.create),  controller.createTransfer);
-router.post('/create',  controller.createTransfer);
+router.post('/', ValidateJoi(transactionValidationSchema.transaction.create),  controller.createTransaction);
+// router.post('/confirm',  controller.confirmTransaction);
 
 
 export = router;
