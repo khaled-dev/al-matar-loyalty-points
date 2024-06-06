@@ -34,23 +34,22 @@ const register = async (req: IRegisterRequest, res: Response) => {
 
     const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET!, { expiresIn: process.env.JWT_TOKEN_EXPIRE });
 
-    response.success(res, {token}, 'Registration successful', 201)
+    response.success(res, {'access-token': token}, 'Registration successful', 201)
 };
 
 const login = async (req: ILoginRequest, res: Response) => {
 
-    //TODO: move it to validation
     const user : UserModel = await User.findOne({ email: req.body.email });
 
-    if (! user) return res.status(404).send({ message: 'User not found' });
+    if (! user) return response.error(res, {}, 'Invalid Credentials', 401);
 
     const validPassword = await bcrypt.compare(req.body.password, user.password);
 
-    if (! validPassword) return res.status(401).send({ message: 'Invalid password' });
+    if (! validPassword) return response.error(res, {}, 'Invalid Credentials', 401);
 
     const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET!, { expiresIn: process.env.JWT_TOKEN_EXPIRE });
 
-    res.send({ message: 'Logged in successfully', token });
+    response.success(res, {'access-token': token}, 'Logged in successful')
 };
 
 export default { register, login };

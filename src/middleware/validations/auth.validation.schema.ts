@@ -1,5 +1,6 @@
 import Joi from "joi";
 import User, {IUser, UserModel} from "../../models/user.model";
+import bcrypt from "bcrypt";
 
 export const registerValidationSchema =  Joi.object<IUser>({
         name: Joi.string().required().max(225),
@@ -8,15 +9,16 @@ export const registerValidationSchema =  Joi.object<IUser>({
                 let user : UserModel = await User.findOne({ email: value }).exec()
 
                 if (user) {
-                    return helpers.message( {external: '{#label} already exists' });
+                    return helpers.message( {external: '{#label} already exists' })
                 }
-                return true;
+
+                return true
             }),
         password: Joi.string().required().min(5).max(225),
     });
 
 export const loginValidationSchema =  Joi.object<IUser>(
     {
-        email: Joi.string().required(),
-        password: Joi.string().required(),
+        email: Joi.string().required().email(),
+        password: Joi.string().required().min(5).max(225),
     });
