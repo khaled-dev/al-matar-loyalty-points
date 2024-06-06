@@ -2,11 +2,15 @@ import Transaction, {TransactionModel, TransactionStatus} from "../models/transa
 import User, {UserModel} from "../models/user.model";
 import {scheduleJob} from "node-schedule/lib/schedule";
 import Logging from "../config/logging";
+import mongoose, {ClientSession, Document, Schema} from 'mongoose';
 
 
 const rejectTransactions = async () => {
     scheduleJob('*/3 * * * * *', async () => {
-        Logging.info('CronJob Running....')
+        Logging.info('...................')
+        Logging.info('..CronJob Running..')
+        Logging.info('...................')
+
         const tenMinutesAgo : Date  = new Date(Date.now() - ( Number(process.env.TRANSACTION_EXPIRE_TIME) * 60 * 1000))
         
         // get all [old&pending] transactions
@@ -40,7 +44,10 @@ const rejectTransactions = async () => {
         })
 
 
-        Logging.info('CronJob: Done.')
+        Logging.info('...................')
+        Logging.info('...CronJob: Done...')
+        Logging.info('...................')
+
     })
 }
 
