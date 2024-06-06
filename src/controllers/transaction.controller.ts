@@ -2,6 +2,7 @@ import {Request, Response} from 'express';
 import Transaction, {TransactionModel, TransactionStatus} from '../models/transaction.model';
 import response from "../http/response";
 import jwt from "jsonwebtoken";
+import transactionView from "../views/transaction.view";
 import User, {UserModel} from "../models/user.model";
 
 interface ICreateTransactionRequest extends Request {
@@ -35,8 +36,7 @@ const getAuthEmail = (req: Request) : string => {
 const listTransactions = async (req: Request, res: Response) => {
     const transactions : TransactionModel[] = await Transaction.where({ senderEmail: getAuthEmail(req) });
 
-    //TODO: add resource-response
-    response.success(res, {transactions}, 'Transaction list')
+    response.success(res, transactionView.many(transactions), 'Transaction list')
 }
 
 /**
@@ -67,7 +67,7 @@ const createTransaction = async (req: ICreateTransactionRequest, res: Response) 
     user.points -= points;
     await user.save()
 
-    response.success(res, {transaction}, 'points transferred successfully')
+    response.success(res, transactionView.one(transaction), 'points transferred successfully')
 };
 
 /**
@@ -78,6 +78,8 @@ const createTransaction = async (req: ICreateTransactionRequest, res: Response) 
  */
 const confirmTransaction = async (req: IConfirmTransactionRequest, res: Response) => {
     const authEmail : string = getAuthEmail(req)
+
+    //TODO create a query to check on each case at once
     const transaction : TransactionModel = await Transaction.findOne({ _id: req.body.transactionId });
 
     if (transaction.senderEmail !== authEmail) return response.validation(res, {transactionId: req.body.transactionId}, 'You cant confirm this transaction.', 422)
@@ -95,7 +97,7 @@ const confirmTransaction = async (req: IConfirmTransactionRequest, res: Response
     receiver.points += transaction.points
     await receiver.save()
 
-    response.success(res, {transaction}, 'Transaction Confirmed')
+    response.success(res, transactionView.one(transaction), 'Transaction Confirmed')
 }
 
 /**
@@ -110,7 +112,7 @@ const rejectTransaction = async (req: IConfirmTransactionRequest, res: Response)
 
     if (transaction.senderEmail !== authEmail) return response.validation(res, {transactionId: req.body.transactionId}, 'You cant Reject this transaction.', 422)
 
-    if (transaction.status !== TransactionStatus.PENDING) return response.validation(res, {transactionId: req.body.transactionId}, 'Transaction is not conformable.', 422)
+    if (transaction.status !== TransactionStatus.PENDING) return response.validation(res, {transactionId: req.body.transactionId}, 'Transaction is not rejectable.', 422)
 
     // set as rejected
     transaction.status = TransactionStatus.REJECTED
@@ -121,7 +123,7 @@ const rejectTransaction = async (req: IConfirmTransactionRequest, res: Response)
     receiver.points += transaction.points
     await receiver.save()
 
-    response.success(res, {transaction}, 'Transaction Rejected')
+    response.success(res, transactionView.one(transaction), 'Transaction Rejected')
 }
 
 
