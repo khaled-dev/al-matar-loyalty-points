@@ -25,7 +25,4 @@ const validation = (res: Response, error : {} = {}, message : string = 'Bad Requ
     })
 }
 
-//TODO: authorization
-//TODO: authontication
-
 export default { success, error, validation};

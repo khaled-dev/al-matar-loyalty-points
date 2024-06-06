@@ -1,15 +1,26 @@
 import Joi from "joi";
 import {ITransaction} from "../../models/transaction.model";
+import User, {UserModel} from "../../models/user.model";
 
-export const createValidationSchema = Joi.object<ITransaction>(
+export const createTransactionValidationSchema = Joi.object<ITransaction>(
     {
-        senderEmail: Joi.string().required(),
-        receiverEmail: Joi.string().required(),
-        // TODO: validate it exsists
-        // TODO: it has enough points
-        // receiverEmail: Joi.string().required().custom(  (value, helpers) => {
-        //     // check if exists
-        //     return helpers.error('any.invalid');
-        // }, 'custom validation'),
-        points: Joi.number().required(),
+        senderEmail: Joi.string().required().email().external(async (value, helpers) => {
+            let user : UserModel = await User.findOne({ email: value }).exec()
+
+            if (! user) {
+                return helpers.message( {external: '{#label} does not exist' })
+            }
+
+            return true
+        }),
+        receiverEmail: Joi.string().required().email() .external(async (value, helpers) => {
+            let user : UserModel = await User.findOne({ email: value }).exec()
+
+            if (! user) {
+                return helpers.message( {external: '{#label} does not exist' })
+            }
+
+            return true
+        }),
+        points: Joi.number().positive().required(),
     });
