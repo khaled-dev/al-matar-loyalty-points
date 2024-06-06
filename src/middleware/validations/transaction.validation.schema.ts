@@ -29,15 +29,12 @@ export const createTransactionValidationSchema = Joi.object<ITransaction>(
 export const updateValidationSchema =  Joi.object<ITransactionUpdate>(
     {
         transactionId: Joi.string().required().hex().external(async (value, helpers) => {
-
-            if (! isValidObjectId(value)) {
-                return helpers.message( {external: '{#label} is not exist' })
+            if (isValidObjectId(value)) {
+                if (await Transaction.findById({ _id: value }).exec()) {
+                    return true
+                }
             }
 
-            if (! await Transaction.findById({ _id: value }).exec()) {
-                return helpers.message( {external: '{#label} is not exist' })
-            }
-
-            return true
+            return helpers.message( {external: '{#label} is not exist' })
         }),
     });
