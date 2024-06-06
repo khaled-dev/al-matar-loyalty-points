@@ -27,7 +27,7 @@ const getAuthEmail = (req: Request) : string => {
 }
 
 /**
- * List auth's transactions.
+ * List user's transactions.
  *
  * @param req
  * @param res
@@ -77,35 +77,25 @@ const createTransaction = async (req: ICreateTransactionRequest, res: Response) 
  * @param res
  */
 const confirmTransaction = async (req: IConfirmTransactionRequest, res: Response) => {
-    // validate input (transaction id)
-
-    // virfy it's sent by me
     const authEmail : string = getAuthEmail(req)
     const transaction : TransactionModel = await Transaction.findOne({ _id: req.body.transactionId });
 
     if (transaction.senderEmail !== authEmail) return response.validation(res, {transactionId: req.body.transactionId}, 'You cant confirm this transaction.', 422)
 
-    // veirfy the pending state
-    // virfy the time less than [10m]->env-var,
     if ( transaction.status !== TransactionStatus.PENDING || transaction.createdAt.getTime() < (Date.now() - (parseInt(process.env.TRANSACTION_EXPIRE_TIME) * 60 * 1000)) ) {
         return response.validation(res, {transactionId: req.body.transactionId}, 'Transaction is not conformable.', 422)
     }
 
-    // change state
+    // set as confirmed
     transaction.status = TransactionStatus.CONFIRMED
     await transaction.save()
 
-    // sum the points
+    // send the points
     const receiver : UserModel = await User.findOne({ email: transaction.receiverEmail });
     receiver.points += transaction.points
     await receiver.save()
 
     response.success(res, {transaction}, 'Transaction Confirmed')
-}
-
-
-const updateTransactionState = (req: Request, ) => {
-
 }
 
 /**
@@ -115,17 +105,23 @@ const updateTransactionState = (req: Request, ) => {
  * @param res
  */
 const rejectTransaction = async (req: IConfirmTransactionRequest, res: Response) => {
-    // virfy it's sent by me
+    const authEmail : string = getAuthEmail(req)
+    const transaction : TransactionModel = await Transaction.findOne({ _id: req.body.transactionId });
 
-    // veirfy the pending state
+    if (transaction.senderEmail !== authEmail) return response.validation(res, {transactionId: req.body.transactionId}, 'You cant Reject this transaction.', 422)
 
+    if (transaction.status !== TransactionStatus.PENDING) return response.validation(res, {transactionId: req.body.transactionId}, 'Transaction is not conformable.', 422)
 
-    // virfy the time less than [10m]->env-var, --> no need for this
+    // set as rejected
+    transaction.status = TransactionStatus.REJECTED
+    await transaction.save()
 
+    // return back the points
+    const receiver : UserModel = await User.findOne({ email: transaction.senderEmail });
+    receiver.points += transaction.points
+    await receiver.save()
 
-    // change state
-    // sum the points back to the sender
-
+    response.success(res, {transaction}, 'Transaction Rejected')
 }
 
 
