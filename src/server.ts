@@ -5,7 +5,8 @@ import { config } from './config/config';
 import Logging from './config/logging';
 import transactionRoutes from './routes/transaction.route';
 import authRoutes from './routes/auth.route';
-import rejectTransactions from './jobs/transaction.job'
+import swaggerUi from "swagger-ui-express";
+import * as swaggerDocument from "../swagger.json";
 
 const router = express();
 
@@ -13,7 +14,7 @@ mongoose.connect(config.mongo.url, { retryWrites: true, w: 'majority' })
     .then(() => {
         Logging.info('Mongo connected successfully.');
         StartServer();
-        rejectTransactions.rejectTransactions()
+        // rejectTransactions.rejectTransactions()
     })
     .catch((error) => Logging.error(error));
 
@@ -33,6 +34,7 @@ const StartServer = () => {
 
     router.use('/transactions', transactionRoutes);
     router.use('/auth', authRoutes);
+    router.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
     router.use((req, res, next) => {
         const error = new Error('Not found');

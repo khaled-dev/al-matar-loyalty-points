@@ -1,6 +1,6 @@
 import {TransactionModel} from '../models/transaction.model';
 
-const one = (transaction) => {
+const one = (transaction: TransactionModel) => {
     return {
         ID: transaction._id,
         SenderEmail: transaction.senderEmail,
