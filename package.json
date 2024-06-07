@@ -4,6 +4,7 @@
   "description": "",
   "main": "src/server.ts",
   "scripts": {
+    "build": "tsc",
     "start": "tsc && node dist/server.js",
     "watch": "npx ts-node-dev --respawn src/server.ts",
     "test": "npx jest --colors",

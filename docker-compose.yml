@@ -1,0 +1,27 @@
+version: '3.8'
+services:
+  app:
+    container_name: almatar_loyalty_app
+    build: .
+    networks:
+      - almatar_network
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongodb
+  mongodb:
+    container_name: almatar_loyalty_mongodb
+    image: mongo:latest
+    networks:
+      - almatar_network
+    ports:
+      - "27017:27017"
+    volumes:
+      - almatar_mongodb_data_container:/data/db
+
+networks:
+  almatar_network:
+    driver: bridge
+
+volumes:
+  almatar_mongodb_data_container:

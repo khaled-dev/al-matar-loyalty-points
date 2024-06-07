@@ -2,10 +2,13 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+/**
+ * Database configurations
+ */
+
 const MONGO_USERNAME = process.env.MONGO_USERNAME || '';
 const MONGO_PASSWORD = process.env.MONGO_PASSWORD || '';
-const MONGO_URL      = process.env.NODE_ENV === 'test' ? 'mongodb://localhost:27017/almatar-test' : 'mongodb://localhost:27017/almatar';
-
+const MONGO_URL      = process.env.MONGO_URL || '';
 const SERVER_PORT = process.env.SERVER_PORT ? Number(process.env.SERVER_PORT) : 1337;
 
 export const config = {
