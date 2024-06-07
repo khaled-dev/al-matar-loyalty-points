@@ -18,7 +18,9 @@ export const authMiddleware = () => {
             return response.error(res, { message: err.message }, 'Unauthorized', 401)
         }
 
-        Logging.info(`access-token: ${token}`)
+        if (process.env.NODE_ENV !== 'test') {
+            Logging.info(`access-token: ${token}`)
+        }
 
         next();
     };

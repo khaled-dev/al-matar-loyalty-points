@@ -60,7 +60,7 @@ const createTransaction = async (req: ICreateTransactionRequest, res: Response) 
         points,
     }, user)
 
-    response.success(res, transactionView.one(transaction), 'points transferred successfully')
+    response.success(res, transactionView.one(transaction), 'Points transferred successfully', 201)
 };
 
 /**
@@ -106,6 +106,8 @@ const rejectTransaction = async (req: IConfirmTransactionRequest, res: Response)
         senderEmail: authEmail,
         status:  TransactionStatus.PENDING
     });
+
+    if (! transaction) return response.validation(res, {transactionId: req.body.transactionId}, 'You cant reject this transaction.', 422)
 
     // set as rejected
     transaction.status = TransactionStatus.REJECTED

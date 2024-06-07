@@ -4,7 +4,7 @@ const one = (transaction: TransactionModel) => {
     return {
         ID: transaction._id,
         SenderEmail: transaction.senderEmail,
-        ReceiverEmail: transaction.senderEmail,
+        ReceiverEmail: transaction.receiverEmail,
         Points: transaction.points,
         Status: transaction.status,
         CreatedAt: transaction.createdAt.toLocaleString(),
@@ -16,7 +16,7 @@ const many = (transactions: TransactionModel[]) => {
         return {
             ID: transaction._id,
             SenderEmail: transaction.senderEmail,
-            ReceiverEmail: transaction.senderEmail,
+            ReceiverEmail: transaction.receiverEmail,
             Points: transaction.points,
             Status: transaction.status,
             CreatedAt: transaction.createdAt.toLocaleString(),

@@ -1,7 +1,9 @@
 import request from 'supertest';
 import app from '../../src/server';
-import User, {UserModel} from "../../src/models/user.model"; // Ensure your server exports the Express app instance
+import User, {UserModel} from "../../src/models/user.model";
 import bcrypt from 'bcrypt';
+import Transaction from "../../src/models/transaction.model";
+import mongoose from 'mongoose';
 
 
 describe('Authentication', () => {
@@ -19,7 +21,7 @@ describe('Authentication', () => {
             expect(res.statusCode).toEqual(201)
             expect(res.body.message).toEqual('Registration successful')
             expect(res.body.data).toHaveProperty('access-token')
-        });
+        })
 
         it('should not register a user without name input', async () => {
             const res = await request(app)
@@ -32,7 +34,7 @@ describe('Authentication', () => {
             expect(res.statusCode).toEqual(422)
             expect(res.body.message).toEqual('Bad Request')
             expect(res.body.error[0].message).toEqual('"name" is required')
-        });
+        })
 
         it('should not register a user without email input', async () => {
             const res = await request(app)
@@ -45,7 +47,7 @@ describe('Authentication', () => {
             expect(res.statusCode).toEqual(422)
             expect(res.body.message).toEqual('Bad Request')
             expect(res.body.error[0].message).toEqual('"email" is required')
-        });
+        })
 
         it('should not register user with the same email twice', async () => {
             await User.create({
@@ -88,7 +90,7 @@ describe('Authentication', () => {
             expect(res.statusCode).toEqual(200)
             expect(res.body.message).toEqual('Logged in successful')
             expect(res.body.data).toHaveProperty('access-token')
-        });
+        })
 
         it('should not login a user with wrong credentials', async () => {
             await User.create({
@@ -107,7 +109,7 @@ describe('Authentication', () => {
             expect(res.statusCode).toEqual(401)
             expect(res.body.message).toEqual('Invalid Credentials')
             expect(res.body).toHaveProperty('error')
-        });
+        })
 
         it('should not login a user without email input', async () => {
             const res = await request(app)
@@ -134,9 +136,12 @@ describe('Authentication', () => {
             expect(res.body).toHaveProperty('error')
         })
     })
-})
 
-afterEach(async () => {
-    // Clean the users table before each test
-    await User.deleteMany()
+    afterEach(async () => {
+        await User.deleteMany()
+    })
+
+    afterAll( () => {
+        mongoose.disconnect()
+    })
 })
