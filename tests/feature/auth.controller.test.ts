@@ -2,7 +2,6 @@ import request from 'supertest';
 import app from '../../src/server';
 import User, {UserModel} from "../../src/models/user.model";
 import bcrypt from 'bcrypt';
-import Transaction from "../../src/models/transaction.model";
 import mongoose from 'mongoose';
 
 

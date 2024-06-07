@@ -10,14 +10,15 @@ import * as swaggerDocument from "../swagger.json";
 
 const app = express();
 
-mongoose.connect(config.mongo.url, { retryWrites: true, w: 'majority' })
-    .then(() => {
-        if (process.env.NODE_ENV !== 'test') {
-            Logging.info('Mongo connected successfully.');
-            // rejectTransactions.rejectTransactions()
-        }
-    })
-    .catch((error) => Logging.error(error));
+if (process.env.NODE_ENV !== 'test') {
+    mongoose.connect(config.mongo.url, { retryWrites: true, w: 'majority' })
+        .then(() => {
+                Logging.info('Mongo connected successfully.');
+                // rejectTransactions.rejectTransactions()
+        })
+        .catch((error) => Logging.error(error));
+}
+
 
 if (process.env.NODE_ENV !== 'test') {
     app.use((req, res, next) => {
