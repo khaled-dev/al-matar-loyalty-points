@@ -1,7 +1,7 @@
 import {Request, Response} from 'express';
 import Transaction, {TransactionModel, TransactionStatus} from '../models/transaction.model';
 import response from "../http/response";
-import jwt from "jsonwebtoken";
+import authService from "../services/auth.service";
 import transactionView from "../views/transaction.view";
 import User, {UserModel} from "../models/user.model";
 import transactionFactory from "../models/factory/transaction.factory";
@@ -19,14 +19,6 @@ interface IConfirmTransactionRequest extends Request {
     };
 }
 
-const getAuthEmail = (req: Request) : string => {
-    let authHeader : any = req.headers['authorization']
-    const token = authHeader && authHeader.split(' ')[1]
-    let decoded = jwt.verify(token, process.env.JWT_SECRET!)
-
-    return decoded.email
-}
-
 /**
  * List user's transactions.
  *
@@ -34,7 +26,7 @@ const getAuthEmail = (req: Request) : string => {
  * @param res
  */
 const listTransactions = async (req: Request, res: Response) => {
-    const transactions : TransactionModel[] = await Transaction.where({ senderEmail: getAuthEmail(req) });
+    const transactions : TransactionModel[] = await Transaction.where({ senderEmail: authService.getAuthEmail(req) });
 
     response.success(res, transactionView.many(transactions), 'Transaction list')
 }
@@ -47,7 +39,7 @@ const listTransactions = async (req: Request, res: Response) => {
  */
 const createTransaction = async (req: ICreateTransactionRequest, res: Response) => {
     const { receiverEmail, points } = req.body;
-    const authEmail : string = getAuthEmail(req)
+    const authEmail : string = authService.getAuthEmail(req)
 
     if (receiverEmail === authEmail) return response.validation(res, {receiverEmail}, 'The transaction is made to yourself!!', 422)
 
@@ -70,7 +62,7 @@ const createTransaction = async (req: ICreateTransactionRequest, res: Response) 
  * @param res
  */
 const confirmTransaction = async (req: IConfirmTransactionRequest, res: Response) => {
-    const authEmail : string = getAuthEmail(req)
+    const authEmail : string = authService.getAuthEmail(req)
     const tenMinutesAgo : Date  = new Date(Date.now() - ( Number(process.env.TRANSACTION_EXPIRE_TIME) * 60 * 1000))
     const transaction : TransactionModel  = await Transaction.findOne({
         _id: req.body.transactionId,
@@ -100,7 +92,7 @@ const confirmTransaction = async (req: IConfirmTransactionRequest, res: Response
  * @param res
  */
 const rejectTransaction = async (req: IConfirmTransactionRequest, res: Response) => {
-    const authEmail : string = getAuthEmail(req)
+    const authEmail : string = authService.getAuthEmail(req)
     const transaction : TransactionModel  = await Transaction.findOne({
         _id: req.body.transactionId,
         senderEmail: authEmail,
@@ -122,4 +114,4 @@ const rejectTransaction = async (req: IConfirmTransactionRequest, res: Response)
 }
 
 
-export  default { createTransaction, listTransactions, confirmTransaction, rejectTransaction};
+export default { createTransaction, listTransactions, confirmTransaction, rejectTransaction}

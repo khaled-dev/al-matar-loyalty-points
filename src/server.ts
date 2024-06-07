@@ -4,6 +4,7 @@ import { config } from './config/config';
 import Logging from './config/logging';
 import transactionRoutes from './routes/transaction.route';
 import authRoutes from './routes/auth.route';
+import userRoutes from './routes/user.route';
 import swaggerUi from "swagger-ui-express";
 import * as swaggerDocument from "../swagger.json";
 
@@ -34,6 +35,7 @@ app.use(express.json());
 
 app.use('/transactions', transactionRoutes);
 app.use('/auth', authRoutes);
+app.use('/user', userRoutes);
 
 if (process.env.NODE_ENV === 'development') {
     app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
