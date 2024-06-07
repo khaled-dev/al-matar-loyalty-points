@@ -10,7 +10,9 @@ export const ValidateJoi = (schema: ObjectSchema) => {
 
             next();
         } catch (error) {
-            Logging.error(error)
+            if (process.env.NODE_ENV !== 'test') {
+                Logging.error(error)
+            }
 
             return response.validation(res, error.details.map(detail => ({
                 message: detail.message,
