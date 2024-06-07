@@ -5,10 +5,17 @@ import Transaction, {TransactionModel} from "../../src/models/transaction.model"
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import mongoose from "mongoose";
+import {MongoMemoryServer} from "mongodb-memory-server";
 
 describe('transaction', () => {
-
+    let mongoServer;
     let userToken: string;
+
+    beforeAll(async () => {
+        mongoServer = await MongoMemoryServer.create();
+        const uri = await mongoServer.getUri();
+        await mongoose.connect(uri);
+    });
 
     beforeEach(async () => {
         const user : UserModel = await User.create({
@@ -69,6 +76,11 @@ describe('transaction', () => {
             expect(res.body.data.SenderEmail).toEqual('transactionSender@email.com')
             expect(res.body.data.ReceiverEmail).toEqual(receiver.email)
             expect(res.body.data.Points).toEqual(10)
+
+            // check sender's points has been deducted
+            const senderChecker : UserModel = await User.findOne({email: 'transactionSender@email.com'})
+            expect(senderChecker.points).toEqual(490)
+
         })
 
         it('should not create a transaction to yourself', async () => {
@@ -147,6 +159,11 @@ describe('transaction', () => {
             expect(res.body.data.SenderEmail).toEqual('transactionSender@email.com')
             expect(res.body.data.ReceiverEmail).toEqual(receiver.email)
             expect(res.body.data.Points).toEqual(10)
+
+            // check sender's points did not add it back to him
+            const senderChecker : UserModel = await User.findOne({email: 'transactionSender@email.com'})
+            expect(senderChecker.points).toEqual(500)
+
         })
 
         it('should not confirm not pending transaction', async () => {
@@ -242,6 +259,10 @@ describe('transaction', () => {
             expect(res.body.data.SenderEmail).toEqual('transactionSender@email.com')
             expect(res.body.data.ReceiverEmail).toEqual(receiver.email)
             expect(res.body.data.Points).toEqual(10)
+
+            // check sender's points has benn added it back to him
+            const senderChecker : UserModel = await User.findOne({email: 'transactionSender@email.com'})
+            expect(senderChecker.points).toEqual(510)
         })
 
         it('should not reject not pending transaction', async () => {
@@ -316,9 +337,10 @@ describe('transaction', () => {
         await Transaction.deleteMany()
     })
 
-    afterAll( () => {
-        mongoose.disconnect()
-    })
+    afterAll(async () => {
+        await mongoose.disconnect();
+        await mongoServer.stop();
+    });
 
 })
 
