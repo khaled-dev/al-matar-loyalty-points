@@ -32,7 +32,7 @@ const doRejectTransactions = async () : Promise<void> => {
 
     // if nothing found
     if (transactions.length === 0) {
-        Logging.info('CronJob: no transactions found...')
+        if (process.env.NODE_ENV !== 'test') Logging.info('CronJob: no transactions found...')
         return;
     }
 
@@ -43,7 +43,7 @@ const doRejectTransactions = async () : Promise<void> => {
     }, {
         status: TransactionStatus.REJECTED,
     })
-    Logging.info('CronJob: transactions updated successfully ids: ' + transactionIds)
+    if (process.env.NODE_ENV !== 'test') Logging.info('CronJob: transactions updated successfully ids: ' + transactionIds)
 
     // resend points to its original sender
     transactions.map( async (transaction : TransactionModel) => {
@@ -51,7 +51,7 @@ const doRejectTransactions = async () : Promise<void> => {
         user.points += transaction.points
         await user.save()
 
-        Logging.info('CronJob: user id: ' + user.id + ' updated successfully.')
+        if (process.env.NODE_ENV !== 'test') Logging.info('CronJob: user id: ' + user.id + ' updated successfully.')
     })
 }
 

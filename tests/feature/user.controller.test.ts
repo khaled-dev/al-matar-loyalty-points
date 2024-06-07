@@ -4,8 +4,17 @@ import User, {UserModel} from "../../src/models/user.model";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import mongoose from "mongoose";
+import {MongoMemoryServer} from "mongodb-memory-server";
 
 describe('user', () => {
+
+    let mongoServer;
+
+    beforeAll(async () => {
+        mongoServer = await MongoMemoryServer.create();
+        const uri = await mongoServer.getUri();
+        await mongoose.connect(uri);
+    });
 
     describe('points', () => {
         it('should get his points number', async () => {
@@ -31,10 +40,10 @@ describe('user', () => {
         await User.deleteMany()
     })
 
-    afterAll( () => {
-        mongoose.disconnect()
+    afterAll( async () => {
+        await mongoose.disconnect()
+        await mongoServer.stop()
     })
-
 })
 
 

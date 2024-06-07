@@ -3,9 +3,18 @@ import app from '../../src/server';
 import User, {UserModel} from "../../src/models/user.model";
 import bcrypt from 'bcrypt';
 import mongoose from 'mongoose';
+import {MongoMemoryServer} from "mongodb-memory-server";
 
 
 describe('Authentication', () => {
+    let mongoServer;
+
+    beforeAll(async () => {
+        mongoServer = await MongoMemoryServer.create();
+        const uri = await mongoServer.getUri();
+        await mongoose.connect(uri);
+    });
+
     describe('register', () => {
 
         it('should register a new user', async () => {
@@ -140,7 +149,8 @@ describe('Authentication', () => {
         await User.deleteMany()
     })
 
-    afterAll( () => {
-        mongoose.disconnect()
+    afterAll( async () => {
+        await mongoose.disconnect()
+        await mongoServer.stop()
     })
 })
