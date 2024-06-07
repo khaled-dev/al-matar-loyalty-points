@@ -24,7 +24,7 @@ describe('transaction', () => {
             password: await bcrypt.hash('password', 10),
         })
 
-        userToken = jwt.sign({ _id: user._id, email: user.email }, 'test', { expiresIn: '1m' });
+        userToken = jwt.sign({ _id: user._id, email: user.email }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_TOKEN_EXPIRE })
     })
 
     describe('list', () => {

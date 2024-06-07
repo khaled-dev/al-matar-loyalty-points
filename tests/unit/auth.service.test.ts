@@ -7,7 +7,7 @@ describe('cronJob', () => {
 
     describe('transaction', () => {
         it('should reject pending outdated transactions', async () => {
-            const token = jwt.sign({ _id: 7, email: 'test@email.com' }, 'test', { expiresIn: '1m' });
+            const token = jwt.sign({ _id: 7, email: 'test@email.com' }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_TOKEN_EXPIRE })
 
             const authEmail : string =  authService.getAuthEmail(getMockReq({
                 method: 'GET',
