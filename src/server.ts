@@ -13,10 +13,12 @@ const app = express()
 
 if (process.env.NODE_ENV !== 'test') {
     mongoose.connect(config.mongo.url, { retryWrites: true, w: 'majority' })
-        .then(() => {
-                Logging.info('Mongo connected successfully.')
+        .then(async () => {
+            Logging.info('Mongo connected successfully.')
                 // Run the worker
-                rejectTransactions.rejectTransactions()
+            if ( process.env.CRONJOB === 'active' ) {
+                await rejectTransactions.rejectTransactions()
+            }
         })
         .catch((error) => Logging.error(error))
 }

@@ -6,7 +6,7 @@ services:
     networks:
       - almatar_network
     ports:
-      - "3000:3000"
+      - "${SERVER_PORT:-3000}:3000"
     depends_on:
       - mongodb
   mongodb:
@@ -15,7 +15,7 @@ services:
     networks:
       - almatar_network
     ports:
-      - "27017:27017"
+      - "${SERVER_PORT:-27017}:27017"
     volumes:
       - almatar_mongodb_data_container:/data/db
 

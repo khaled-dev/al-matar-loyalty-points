@@ -17,7 +17,9 @@ cp .env.example .env
 docker-compose up
 ```
 ###
-> If port 3000 already taken, try to change the env variable `SERVER_PORT` and rerun the previous command
+> If port `3000` already taken, try to change the env variable `SERVER_PORT` and rerun the previous command.
+>
+> If port `27017` already taken, try to change the env variable `MONGO_PORT` and rerun the previous command.
 ###
 
 #### Run the tests
