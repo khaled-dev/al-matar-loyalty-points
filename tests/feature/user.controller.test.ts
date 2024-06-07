@@ -14,6 +14,8 @@ describe('user', () => {
         mongoServer = await MongoMemoryServer.create();
         const uri = await mongoServer.getUri();
         await mongoose.connect(uri);
+
+
     });
 
     describe('points', () => {
@@ -23,7 +25,9 @@ describe('user', () => {
                 email: 'transactionSender@email.com',
                 password: await bcrypt.hash('password', 10),
             })
-            let userToken = jwt.sign({ _id: user._id, email: user.email }, process.env.JWT_SECRET!, { expiresIn: process.env.JWT_TOKEN_EXPIRE });
+            // const token = jwt.sign({ _id: 7, email: 'test@email.com' }, 'test', { expiresIn: '1m' });
+
+            let userToken = jwt.sign({ _id: user._id, email: user.email }, 'test', { expiresIn: '1m' });
 
             const res = await request(app)
                 .get('/user/points')

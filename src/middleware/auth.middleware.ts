@@ -13,7 +13,9 @@ export const authMiddleware = () => {
         }
 
         try {
-            jwt.verify(token, process.env.JWT_SECRET!)
+            const secretKey =  process.env.NODE_ENV === 'test' ? 'test' : process.env.JWT_SECRET
+
+            jwt.verify(token, secretKey!)
         } catch(err) {
             return response.error(res, { message: err.message }, 'Unauthorized', 401)
         }
