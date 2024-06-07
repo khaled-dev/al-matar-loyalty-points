@@ -68,6 +68,22 @@
         }
       }
     },
+    "/user/points": {
+      "get": {
+        "summary": "Get User Points",
+        "operationId": "getUserPoints",
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved user points"
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      }
+    },
     "/transactions": {
       "get": {
         "summary": "Get transactions",
