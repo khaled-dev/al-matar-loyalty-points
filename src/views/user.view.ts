@@ -1,6 +1,6 @@
-import {UserModel} from "../models/user.model";
+import User from "../models/user.model";
 
-const points = (user: UserModel) => {
+const points = (user: User) => {
     return {
         Points: user.points,
     }

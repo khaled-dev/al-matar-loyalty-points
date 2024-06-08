@@ -23,7 +23,11 @@
     "mongoose": "^8.4.1",
     "node-schedule": "^2.1.1",
     "npm": "^10.8.1",
-    "swagger-ui-express": "^5.0.1"
+    "pg": "^8.12.0",
+    "reflect-metadata": "^0.2.2",
+    "sequelize-typescript": "^2.1.6",
+    "swagger-ui-express": "^5.0.1",
+    "typeorm": "^0.3.20"
   },
   "devDependencies": {
     "@jest-mock/express": "^2.0.2",

@@ -1,21 +1,42 @@
-import mongoose, {Document, Schema} from 'mongoose';
+import { Table, Column, Model, DataType } from 'sequelize-typescript';
 
-export interface IUser {
-    name: string,
-    email: string,
-    password: string,
-    points: number,
+@Table({
+    tableName: 'users',
+    timestamps: true
+})
+class User extends Model {
+    @Column({
+        type: DataType.INTEGER,
+        autoIncrement: true,
+        primaryKey: true
+    })
+    id!: number
+
+    @Column({
+        type: DataType.STRING,
+        allowNull: false
+    })
+    name!: string
+
+    @Column({
+        type: DataType.STRING,
+        allowNull: false,
+        unique: true
+    })
+    email!: string
+
+    @Column({
+        type: DataType.STRING,
+        allowNull: false
+    })
+    password!: string
+
+    @Column({
+        type: DataType.INTEGER,
+        allowNull: false,
+        defaultValue: 0
+    })
+    points?: number
 }
 
-const UserSchema : Schema = new Schema(
-    {
-        name: { type: String, required: true },
-        email: { type: String, required: true, unique: true, index: true },
-        password: { type: String, required: true },
-        points: { type: Number, required: true, default: 500 },
-    }, { timestamps: true }
-)
-
-export interface UserModel extends IUser, Document {}
-
-export default mongoose.model<UserModel>('User', UserSchema)
+export default User
