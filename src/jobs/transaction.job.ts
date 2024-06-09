@@ -24,7 +24,7 @@ const rejectTransactions = async () => {
 const doRejectTransactions = async () : Promise<void> => {
     const expireTime : number = process.env.TRANSACTION_EXPIRE_TIME ? Number(process.env.TRANSACTION_EXPIRE_TIME) : 10
     console.log(new Date(Date.now() - ( expireTime * 60 * 100)))
-    const tenMinutesAgo : Date  = new Date(Date.now() - ( expireTime * 60 * 100))
+    const tenMinutesAgo : Date  = new Date(new Date().getTime() - ( expireTime * 60 * 1000))
 
     await db.transaction(async t => {
 
@@ -33,7 +33,7 @@ const doRejectTransactions = async () : Promise<void> => {
             where:{
                 status: TransactionStatus.PENDING,
                 createdAt: {
-                    [Op.gt]: tenMinutesAgo
+                    [Op.lt]: tenMinutesAgo
                 }
             },
             include: [{ all: true }],
@@ -58,17 +58,16 @@ const doRejectTransactions = async () : Promise<void> => {
 
         // resend points to its original sender
         for (let transaction  of transactions) {
-            let sender : User = await User.findOne({ where: {id: transaction.sender.id }, transaction: t})
-            sender.points += transaction.points
+            let points : number = transaction.sender.points + transaction.points
 
-            await Transaction.update({
-                status: TransactionStatus.REJECTED
+            await User.update({
+                points: points
             }, {
-                where: {id: sender.id},
+                where: {id: transaction.sender.id},
                 transaction: t
             })
 
-            if (process.env.NODE_ENV !== 'test') Logging.info('CronJob: user id: ' + sender.id + ' updated successfully.')
+            if (process.env.NODE_ENV !== 'test') Logging.info('CronJob: user id: ' + transaction.sender.id + ' updated successfully.')
         }
 
     })
