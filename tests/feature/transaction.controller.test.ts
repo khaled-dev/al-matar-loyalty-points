@@ -1,9 +1,8 @@
 import request from 'supertest';
 import app from '../../src/server';
 import User from "../../src/models/user.model";
-import Transaction from "../../src/models/transaction.model";
+import Transaction, {TransactionStatus} from "../../src/models/transaction.model";
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
 import db from "../../src/config/db";
 import authService from "../../src/services/auth.service";
 
@@ -153,6 +152,7 @@ describe('transaction', () => {
                 senderId: userId,
                 receiverId: receiver.id,
                 points: 10,
+                status: TransactionStatus.PENDING
             })
 
             const res = await request(app)
@@ -252,6 +252,7 @@ describe('transaction', () => {
                 senderId: userId,
                 receiverId: receiver.id,
                 points: 10,
+                status: TransactionStatus.PENDING
             })
 
             const res = await request(app)

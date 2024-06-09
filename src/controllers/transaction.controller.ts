@@ -80,13 +80,13 @@ const createTransaction = async (req: ICreateTransactionRequest, res: Response) 
 const confirmTransaction = async (req: IConfirmTransactionRequest, res: Response) => {
     const authId : string = authService.getAuthId(req)
     console.log(new Date(Date.now()))
-    const tenMinutesAgo : Date  = new Date(Date.now() - ( Number(process.env.TRANSACTION_EXPIRE_TIME) * 60 * 100))
+    const tenMinutesAgo = new Date(new Date().getTime() - Number(process.env.TRANSACTION_EXPIRE_TIME) * 60 * 1000);
     let transaction : Transaction  = await Transaction.findOne({ where: {
             id: req.body.transactionId,
             status:  TransactionStatus.PENDING,
             senderId: authId,
             createdAt: {
-                [Op.lt]: tenMinutesAgo
+                [Op.gt]: tenMinutesAgo
             }
         }, include: [{ all: true }]
     })

@@ -8,8 +8,35 @@ import swaggerUi from "swagger-ui-express"
 import * as swaggerDocument from "../swagger.json"
 import db from './config/db'
 import rejectTransactions from "./jobs/transaction.job"
+import User from "./models/user.model";
 
 const app = express()
+
+
+
+// Adjust 0 before single-digit date
+// const date = ('0' + dateObject.getDate()).slice(-2);
+//
+// // Adjust 0 before single-digit month and add 1 because getMonth() is 0-indexed
+// const month = ('0' + (dateObject.getMonth() + 1)).slice(-2);
+//
+// // Get current year
+// const year = dateObject.getFullYear();
+//
+// // Get current hours, minutes, and seconds
+// const hours = dateObject.getHours();
+// const minutes = dateObject.getMinutes();
+// const seconds = dateObject.getSeconds();
+
+// 10 min back
+let date = new Date(Date.now() - ( 10 * 60 * 1000))
+let dateObject = new Date().toUTCString();
+
+// Print date and time in YYYY-MM-DD hh:mm:ss format
+console.log(date);
+console.log(dateObject);
+console.log(process.env.TZ);
+console.log()
 
 if (process.env.NODE_ENV !== 'test') {
     db.authenticate()

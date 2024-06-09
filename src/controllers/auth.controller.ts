@@ -41,8 +41,7 @@ const register = async (req: IRegisterRequest, res: Response) => {
             status: TransactionStatus.CONFIRMED
         }, {transaction: t})
 
-        user.points = 500
-        await user.save()
+        await User.update({ points: 500 }, { where: {id: user.id}, transaction: t})
     })
 
     const token = authService.signAuth({ id: user.id, email: user.email })

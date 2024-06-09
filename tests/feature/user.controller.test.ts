@@ -15,7 +15,6 @@ describe('user', () => {
 
     afterEach(async () => {
         await User.destroy({ where: {} });
-        await Transaction.destroy({ where: {} });
     });
 
     afterAll(async () => {

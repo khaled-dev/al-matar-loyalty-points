@@ -44,7 +44,7 @@ describe('cronJob', () => {
                 receiverId: receiver.id,
                 points: 10,
                 status: 'pending',
-                createdAt: new Date(new Date().getTime() - 11 * 60 * 100)
+                createdAt: new Date(new Date().getTime() - 11 * 60 * 1000)
             })
 
             await TransactionJob.doRejectTransactions()

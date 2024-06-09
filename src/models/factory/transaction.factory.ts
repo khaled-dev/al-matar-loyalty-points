@@ -1,4 +1,4 @@
-import Transaction from "../transaction.model"
+import Transaction, {TransactionStatus} from "../transaction.model"
 import User from "../user.model"
 
 export interface TransactionDTO {
@@ -13,6 +13,7 @@ const create = async (transactionObject: TransactionDTO, user : User, t)  : Prom
         senderId: transactionObject.senderId,
         receiverId: transactionObject.receiverId,
         points: transactionObject.points,
+        status: TransactionStatus.PENDING,
     }, {transaction: t})
 
     const pointsMin : number = user.points - transactionObject.points

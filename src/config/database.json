@@ -1,0 +1,14 @@
+{
+  "development": {
+    "username": "postgres",
+    "password": "test",
+    "database": "postgres",
+    "host": "172.17.0.2",
+    "dialect": "postgres",
+    "port": "5432"
+  },
+  "testing": {
+    "dialect": "sqlite",
+    "storage": "./temp/testing.sqlite"
+  }
+}

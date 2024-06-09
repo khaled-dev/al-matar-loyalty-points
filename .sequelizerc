@@ -1,0 +1,7 @@
+const path = require('path');
+
+module.exports = {
+  'config': path.resolve('src', 'config', 'database.json'), // Adjust the path to your actual config file
+  'models-path': path.resolve('src', 'models'),
+  'migrations-path': path.resolve('src', 'migrations') // Adjust the path to your actual migrations directory
+};
