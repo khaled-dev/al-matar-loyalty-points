@@ -1,13 +1,8 @@
 import {Sequelize} from "sequelize-typescript"
 import {Dialect} from "sequelize"
 import { development, testing } from './database.json'
-// const db = new Sequelize({
-//         dialect: 'sqlite',
-//         storage: ':memory:',
-//     });
-let db : Sequelize
-// console.log(process.env.NODE_ENV)
 
+let db : Sequelize
 
 if (process.env.NODE_ENV !== 'test') {
     db = new Sequelize({
