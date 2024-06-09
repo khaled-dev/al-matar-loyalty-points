@@ -1,46 +1,56 @@
-
-import User, {UserModel} from "../../src/models/user.model";
-import mongoose from "mongoose";
-import Transaction, {TransactionModel, TransactionStatus} from "../../oldmodels/transaction.model";
-import { MongoMemoryServer } from 'mongodb-memory-server';
+import User from "../../src/models/user.model";
+import Transaction, {TransactionStatus} from "../../src/models/transaction.model";
 import TransactionJob from '../../src/jobs/transaction.job'
+import db from "../../src/config/db";
+import TransactionModel from "../../src/models/transaction.model";
 
 
 describe('cronJob', () => {
 
-    let mongoServer;
-
     beforeAll(async () => {
-        mongoServer = await MongoMemoryServer.create();
-        const uri = await mongoServer.getUri();
-        await mongoose.connect(uri);
+        await db.sync({ force: true });
+    });
+
+    afterEach(async () => {
+        await User.destroy({ where: {} });
+        await Transaction.destroy({ where: {} });
+    });
+
+    afterAll(async () => {
+        await db.close();
     });
 
     describe('transaction', () => {
         it('should reject pending outdated transactions', async () => {
 
             // create sender user
-            const sender : UserModel = await User.create({
+            const sender : User = await User.create({
                 name: 'transaction Sender',
                 email: 'transactionSender@email.com',
                 points: 90,
                 password: 'password',
             })
 
-            const rejectable : TransactionModel = new Transaction({
-                senderEmail: sender.email,
-                receiverEmail: 'transactionReciver@email.com',
-                points: 10,
+            // create receiver user
+            const receiver : User = await User.create({
+                name: 'transaction receiver',
+                email: 'transactionReceiver@email.com',
+                points: 90,
+                password: 'password',
             })
 
-            rejectable.createdAt = new Date(new Date().getTime() - 11 * 60 * 1000) //
-            await rejectable.save()
-
+            const rejectable : Transaction = await Transaction.create({
+                senderId: sender.id,
+                receiverId: receiver.id,
+                points: 10,
+                status: 'pending',
+                createdAt: new Date(new Date().getTime() - 11 * 60 * 100)
+            })
 
             await TransactionJob.doRejectTransactions()
 
-            const rejected : TransactionModel = await Transaction.findOne({senderEmail: sender.email})
-            const senderChecker : UserModel = await User.findOne({email: sender.email})
+            const rejected : Transaction = await Transaction.findOne({where:{id: rejectable.id}})
+            const senderChecker : User = await User.findOne({where:{email: sender.email}})
 
             expect(rejected.status).toEqual(TransactionStatus.REJECTED)
             expect(senderChecker.points).toEqual(100)
@@ -48,24 +58,32 @@ describe('cronJob', () => {
 
         it('should not reject confirmed transactions', async () => {
 
-            const sender : UserModel = await User.create({
+            const sender : User = await User.create({
                 name: 'transaction Sender',
-                email: 'transactionSender@email.com',
+                email: 'transactionSender2@email.com',
                 points: 90,
                 password: 'password',
             })
 
-            await Transaction.create({
-                senderEmail: sender.email,
-                receiverEmail: 'transactionReciver@email.com',
+            // create receiver user
+            const receiver : User = await User.create({
+                name: 'transaction receiver',
+                email: 'transactionReceiver2@email.com',
+                points: 90,
+                password: 'password',
+            })
+
+            const confirmed : TransactionModel = await Transaction.create({
+                senderId: receiver.id,
+                receiverId: receiver.id,
                 points: 10,
                 status: 'confirmed'
             })
 
             await TransactionJob.doRejectTransactions()
 
-            const transaction : TransactionModel = await Transaction.findOne({senderEmail: sender.email})
-            const senderChecker : UserModel = await User.findOne({email: sender.email})
+            const transaction : Transaction = await Transaction.findOne({where:{id: confirmed.id}})
+            const senderChecker : User = await User.findOne({where:{email: sender.email}})
 
             expect(transaction.status).toEqual(TransactionStatus.CONFIRMED)
             expect(senderChecker.points).toEqual(90)
@@ -74,39 +92,38 @@ describe('cronJob', () => {
         it('should not reject newly added transactions', async () => {
 
             // create sender user
-            const sender : UserModel = await User.create({
+            const sender : User = await User.create({
                 name: 'transaction Sender',
-                email: 'transactionSender@email.com',
+                email: 'transactionSender3@email.com',
                 points: 90,
                 password: 'password',
             })
 
-            await Transaction.create({
-                senderEmail: sender.email,
-                receiverEmail: 'transactionReciver@email.com',
+            // create receiver user
+            const receiver : User = await User.create({
+                name: 'transaction receiver',
+                email: 'transactionReceiver3@email.com',
+                points: 90,
+                password: 'password',
+            })
+
+            const newAdded : Transaction= await Transaction.create({
+                senderId: sender.id,
+                receiverId: receiver.id,
                 points: 10,
+                status: 'pending'
             })
 
             await TransactionJob.doRejectTransactions()
 
-            const transaction : TransactionModel = await Transaction.findOne({senderEmail: sender.email})
-            const senderChecker : UserModel = await User.findOne({email: sender.email})
+            const transaction : Transaction = await Transaction.findOne({where:{id: newAdded.id}})
+            const senderChecker : User = await User.findOne({where:{email: sender.email}})
 
             expect(transaction.status).toEqual(TransactionStatus.PENDING)
             expect(senderChecker.points).toEqual(90)
         })
     })
 
-
-    afterEach(async () => {
-        await User.deleteMany()
-        await Transaction.deleteMany()
-    })
-
-    afterAll(async () => {
-        await mongoose.disconnect();
-        await mongoServer.stop();
-    });
 })
 
 
