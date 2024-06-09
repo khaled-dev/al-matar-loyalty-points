@@ -1,4 +1,4 @@
-import {Response} from "express";
+import {Response} from "express"
 
 
 const success = (res: Response, data : {} = {}, message : string = 'Request successful.', status : number = 200) : Response => {
@@ -25,4 +25,4 @@ const validation = (res: Response, error : {} = {}, message : string = 'Bad Requ
     })
 }
 
-export default { success, error, validation};
+export default { success, error, validation}

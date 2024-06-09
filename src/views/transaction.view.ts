@@ -1,4 +1,4 @@
-import Transaction from '../models/transaction.model';
+import Transaction from '../models/transaction.model'
 
 const one = (transaction: Transaction) => {
     return {

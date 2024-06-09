@@ -1,7 +1,7 @@
-import {NextFunction, Request, Response} from "express";
-import Logging from "../config/logging";
-import response from "../http/response";
-import jwt from 'jsonwebtoken';
+import {NextFunction, Request, Response} from "express"
+import Logging from "../config/logging"
+import response from "../http/response"
+import jwt from 'jsonwebtoken'
 
 export const authMiddleware = () => {
     return async (req: Request, res: Response, next: NextFunction) => {
@@ -20,7 +20,7 @@ export const authMiddleware = () => {
 
         if (process.env.NODE_ENV !== 'test') Logging.info(`access-token: ${token}`)
 
-        next();
-    };
-};
+        next()
+    }
+}
 

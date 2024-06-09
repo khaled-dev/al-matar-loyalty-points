@@ -1,6 +1,5 @@
-import Transaction from "../transaction.model";
-import User from "../user.model";
-
+import Transaction from "../transaction.model"
+import User from "../user.model"
 
 export interface TransactionDTO {
     senderId: number,
@@ -8,16 +7,15 @@ export interface TransactionDTO {
     points: number,
 }
 
-
 const create = async (transactionObject: TransactionDTO, user : User, t)  : Promise<Transaction>    => {
 
     const transaction : Transaction = await  Transaction.create({
         senderId: transactionObject.senderId,
         receiverId: transactionObject.receiverId,
         points: transactionObject.points,
-    }, {transaction: t});
+    }, {transaction: t})
 
-    const pointsMin : number = user.points - transactionObject.points;
+    const pointsMin : number = user.points - transactionObject.points
 
     await User.update({ points: pointsMin }, {
         where: {id: user.id},

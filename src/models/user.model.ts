@@ -1,7 +1,6 @@
 import {Table, Column, Model, DataType, BelongsTo, HasMany} from 'sequelize-typescript'
 import Transaction from './transaction.model'
 
-
 @Table({
     tableName: 'users',
     timestamps: true

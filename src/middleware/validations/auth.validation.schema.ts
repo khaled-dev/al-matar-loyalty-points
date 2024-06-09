@@ -1,5 +1,5 @@
-import Joi from "joi";
-import User from "../../models/user.model";
+import Joi from "joi"
+import User from "../../models/user.model"
 
 export const registerValidationSchema =  Joi.object<User>({
         name: Joi.string().required().max(225),
@@ -14,10 +14,10 @@ export const registerValidationSchema =  Joi.object<User>({
                 return true
             }),
         password: Joi.string().required().min(5).max(225),
-    });
+    })
 
 export const loginValidationSchema =  Joi.object<User>(
     {
         email: Joi.string().required().email(),
         password: Joi.string().required().min(5).max(225),
-    });
+    })

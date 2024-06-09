@@ -1,13 +1,13 @@
-import express from 'express';
-import { config } from './config/config';
-import transactionRoutes from './routes/transaction.route';
-import Logging from './config/logging';
-import authRoutes from './routes/auth.route';
-import userRoutes from './routes/user.route';
-import swaggerUi from "swagger-ui-express";
-import * as swaggerDocument from "../swagger.json";
-import db from './config/db';
-import rejectTransactions from "./jobs/transaction.job";
+import express from 'express'
+import { config } from './config/config'
+import transactionRoutes from './routes/transaction.route'
+import Logging from './config/logging'
+import authRoutes from './routes/auth.route'
+import userRoutes from './routes/user.route'
+import swaggerUi from "swagger-ui-express"
+import * as swaggerDocument from "../swagger.json"
+import db from './config/db'
+import rejectTransactions from "./jobs/transaction.job"
 
 const app = express()
 
@@ -20,7 +20,6 @@ if (process.env.NODE_ENV !== 'test') {
         rejectTransactions.rejectTransactions()
     }
 }
-
 
 if (process.env.NODE_ENV !== 'test') {
     app.use((req, res, next) => {
@@ -48,7 +47,7 @@ if (process.env.NODE_ENV === 'development') {
 
 if (process.env.NODE_ENV !== 'test') {
     app.use((req, res, next) => {
-        const error = new Error('Not found');
+        const error = new Error('Not found')
         Logging.error(error)
 
         res.status(404).json({
@@ -58,12 +57,14 @@ if (process.env.NODE_ENV !== 'test') {
 }
 
 if (process.env.NODE_ENV !== 'test') {
-    app.listen(
-        config.server.port,
-        () => {
-            Logging.info(`Server is running on port ${config.server.port}`)
-        }
-    )
+    try {
+        app.listen(
+            config.server.port,
+            () => {
+                Logging.info(`Server is running on port ${config.server.port}`)
+            }
+        )
+    } catch (e) {Logging.error(e)}
 }
 
 // Export for testing

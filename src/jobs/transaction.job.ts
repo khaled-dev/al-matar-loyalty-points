@@ -1,9 +1,9 @@
-import Transaction, {TransactionStatus} from "../models/transaction.model";
-import User from "../models/user.model";
-import {scheduleJob} from "node-schedule/lib/schedule";
-import Logging from "../config/logging";
-import db from "../config/db";
-import { Op } from 'sequelize';
+import Transaction, {TransactionStatus} from "../models/transaction.model"
+import User from "../models/user.model"
+import {scheduleJob} from "node-schedule/lib/schedule"
+import Logging from "../config/logging"
+import db from "../config/db"
+import { Op } from 'sequelize'
 
 
 const rejectTransactions = async () => {
@@ -43,7 +43,7 @@ const doRejectTransactions = async () : Promise<void> => {
         // if nothing found
         if (transactions.length === 0) {
             if (process.env.NODE_ENV !== 'test') Logging.info('CronJob: no transactions found...')
-            return;
+            return
         }
 
         // reject old transactions

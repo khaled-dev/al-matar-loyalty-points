@@ -1,6 +1,6 @@
-import Joi from "joi";
-import User from "../../models/user.model";
-import Transaction from "../../models/transaction.model";
+import Joi from "joi"
+import User from "../../models/user.model"
+import Transaction from "../../models/transaction.model"
 
 export const createTransactionValidationSchema = Joi.object(
     {
@@ -14,7 +14,7 @@ export const createTransactionValidationSchema = Joi.object(
             return true
         }),
         points: Joi.number().positive().required(),
-    });
+    })
 
 export const updateValidationSchema =  Joi.object(
     {
@@ -26,4 +26,4 @@ export const updateValidationSchema =  Joi.object(
 
             return helpers.message( {external: '{#label} is not exist' })
         }),
-    });
+    })
