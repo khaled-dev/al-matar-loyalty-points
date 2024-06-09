@@ -56,7 +56,7 @@ const createTransaction = async (req: ICreateTransactionRequest, res: Response) 
     const transaction : Transaction  = await transactionFactory.create({
         senderId: sender.id,
         receiverId: receiver.id,
-        points: 10,
+        points: points,
     }, sender)
 
     response.success(res, transactionView.one(transaction), 'Points transferred successfully', 201)
@@ -70,13 +70,14 @@ const createTransaction = async (req: ICreateTransactionRequest, res: Response) 
  */
 const confirmTransaction = async (req: IConfirmTransactionRequest, res: Response) => {
     const authId : string = authService.getAuthId(req)
-    const tenMinutesAgo : Date  = new Date(Date.now() - ( Number(process.env.TRANSACTION_EXPIRE_TIME) * 60 * 1000))
+    console.log(new Date(Date.now()))
+    const tenMinutesAgo : Date  = new Date(Date.now() - ( Number(process.env.TRANSACTION_EXPIRE_TIME) * 60 * 100))
     let transaction : Transaction  = await Transaction.findOne({ where: {
             id: req.body.transactionId,
             status:  TransactionStatus.PENDING,
             senderId: authId,
             createdAt: {
-                [Op.gt]: tenMinutesAgo
+                [Op.lt]: tenMinutesAgo
             }
         }, include: [{ all: true }]
     });

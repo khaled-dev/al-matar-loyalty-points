@@ -7,6 +7,7 @@ const db: Sequelize = new Sequelize({
     username: 'postgres',
     password: 'test',
     dialect: 'postgres',
+    timezone: 'UTC',
     models: [__dirname + '/../models'],
 })
 
