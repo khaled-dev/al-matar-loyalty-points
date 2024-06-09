@@ -1,35 +1,38 @@
-import mongoose, {Document, Schema} from 'mongoose';
+import {Table, Column, Model, BelongsTo, DataType} from 'sequelize-typescript'
+import User from "./user.model"
+
+@Table({
+    tableName: 'transactions',
+    timestamps: true
+})
+class Transaction extends Model {
+    @Column({
+        type: DataType.INTEGER,
+        autoIncrement: true,
+        primaryKey: true
+    })
+    id!: number
+
+    @BelongsTo(() => User, 'senderId')
+    sender!: User
+
+    @BelongsTo(() => User, 'receiverId')
+    receiver!: User
+
+    @Column({
+        type: DataType.INTEGER,
+        allowNull: false
+    })
+    points!: number
+
+    @Column
+    status?: TransactionStatus
+}
 
 export enum TransactionStatus {
     PENDING = "pending",
     REJECTED = "rejected",
-    CONFIRMED = "confirmed",
+    CONFIRMED = "confirmed"
 }
 
-export interface ITransaction {
-    senderEmail: string,
-    receiverEmail: string,
-    points: number,
-    status: TransactionStatus,
-}
-
-export interface ITransactionUpdate {
-    transactionId: string,
-}
-
-const TransactionSchema : Schema = new Schema(
-    {
-        senderEmail: { type: String, required: true, index: true },
-        receiverEmail: { type: String, required: true },
-        points: { type: Number, required: true },
-        status: { type: String, default: TransactionStatus.PENDING }
-    }, { timestamps: true }
-);
-
-
-export interface TransactionModel extends ITransaction, Document {
-    createdAt: Date,
-    updatedAt: Date,
-}
-
-export default mongoose.model<TransactionModel>('Transaction', TransactionSchema)
+export default Transaction

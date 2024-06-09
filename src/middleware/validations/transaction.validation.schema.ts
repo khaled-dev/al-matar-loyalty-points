@@ -1,12 +1,11 @@
 import Joi from "joi";
-import Transaction, {ITransaction, ITransactionUpdate, TransactionModel} from "../../models/transaction.model";
-import User, {UserModel} from "../../models/user.model";
-import {isValidObjectId} from "mongoose";
+import User from "../../models/user.model";
+import Transaction from "../../models/transaction.model";
 
-export const createTransactionValidationSchema = Joi.object<ITransaction>(
+export const createTransactionValidationSchema = Joi.object(
     {
         receiverEmail: Joi.string().required().email().external(async (value, helpers) => {
-            let user : UserModel = await User.findOne({ email: value }).exec()
+            let user : User = await User.findOne({ where: { email: value }})
 
             if (! user) {
                 return helpers.message( {external: '{#label} does not exist' })
@@ -17,13 +16,12 @@ export const createTransactionValidationSchema = Joi.object<ITransaction>(
         points: Joi.number().positive().required(),
     });
 
-export const updateValidationSchema =  Joi.object<ITransactionUpdate>(
+export const updateValidationSchema =  Joi.object(
     {
-        transactionId: Joi.string().required().hex().external(async (value, helpers) => {
-            if (isValidObjectId(value)) {
-                if (await Transaction.findById({ _id: value }).exec()) {
-                    return true
-                }
+        transactionId: Joi.number().required().external(async (value, helpers) => {
+
+            if (await Transaction.findByPk(value)) {
+                return true
             }
 
             return helpers.message( {external: '{#label} is not exist' })

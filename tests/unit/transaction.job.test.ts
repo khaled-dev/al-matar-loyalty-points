@@ -1,7 +1,7 @@
 
 import User, {UserModel} from "../../src/models/user.model";
 import mongoose from "mongoose";
-import Transaction, {TransactionModel, TransactionStatus} from "../../src/models/transaction.model";
+import Transaction, {TransactionModel, TransactionStatus} from "../../oldmodels/transaction.model";
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import TransactionJob from '../../src/jobs/transaction.job'
 

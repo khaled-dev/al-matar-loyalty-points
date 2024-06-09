@@ -1,23 +1,28 @@
-import Transaction, {TransactionModel} from "../transaction.model";
-import {UserModel} from "../user.model";
+import Transaction from "../transaction.model";
+import User from "../user.model";
 
 
 export interface TransactionDTO {
-    senderEmail: string,
-    receiverEmail: string,
+    senderId: number,
+    receiverId: number,
     points: number,
 }
 
 
-const create = async (transactionObject: TransactionDTO , user : UserModel) : Promise<TransactionModel>  => {
+const create = async (transactionObject: TransactionDTO , user : User)  : Promise<Transaction>    => {
 
-    const transaction : TransactionModel  = new Transaction(transactionObject);
-    await transaction.save()
+    console.log(transactionObject)
+
+    const transaction : Transaction = await  Transaction.create({
+        senderId: transactionObject.senderId,
+        receiverId: transactionObject.receiverId,
+        points: transactionObject.points,
+    } );
 
     user.points -= transactionObject.points;
     await user.save()
 
-    return transaction
+    return Transaction.findByPk(transaction.id, { include: [{ all: true }] })
 }
 
 export default {create}

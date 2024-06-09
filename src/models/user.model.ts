@@ -1,4 +1,6 @@
-import { Table, Column, Model, DataType } from 'sequelize-typescript';
+import {Table, Column, Model, DataType, BelongsTo, HasMany} from 'sequelize-typescript'
+import Transaction from './transaction.model'
+
 
 @Table({
     tableName: 'users',
@@ -37,6 +39,9 @@ class User extends Model {
         defaultValue: 0
     })
     points?: number
+
+    @HasMany(() => Transaction, 'senderId')
+    transactions!: Transaction[]
 }
 
 export default User

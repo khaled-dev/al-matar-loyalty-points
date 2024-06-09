@@ -10,4 +10,13 @@ const getAuthEmail = (req: Request) : string => {
     return decoded.email
 }
 
-export default {getAuthEmail}
+const getAuthId = (req: Request) : string => {
+    let authHeader : any = req.headers['authorization']
+    const token = authHeader && authHeader.split(' ')[1]
+
+    let decoded = jwt.verify(token, process.env.JWT_SECRET!)
+
+    return decoded.id
+}
+
+export default {getAuthEmail, getAuthId}

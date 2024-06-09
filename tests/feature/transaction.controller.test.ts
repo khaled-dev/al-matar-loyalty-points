@@ -1,7 +1,7 @@
 import request from 'supertest';
 import app from '../../src/server';
 import User, {UserModel} from "../../src/models/user.model";
-import Transaction, {TransactionModel} from "../../src/models/transaction.model";
+import Transaction, {TransactionModel} from "../../oldmodels/transaction.model";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import mongoose from "mongoose";
