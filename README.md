@@ -1,5 +1,16 @@
 # Al Matar Exercise
 
+## API End-Points
+
+#### You can find The API documentations on this end-point
+
+```
+{localhost:3000}/api-docs/
+```
+----
+
+## THE SETUP
+
 #### Clone and change directory
 ```
 git clone git@github.com:khaled-dev/al-matar-loyalty-points.git
@@ -14,26 +25,47 @@ cp .env.example .env
 
 #### Build docker image and run the containers
 ```
-docker-compose up
+docker-compose up --build
 ```
-###
-> If port `3000` already taken, try to change the env variable `SERVER_PORT` and rerun the previous command.
->
-> If port `27017` already taken, try to change the env variable `MONGO_PORT` and rerun the previous command.
-###
 
-#### Run the tests
+> you can change the taken ports by changing their values in the `.env` file,
+> and in `src/gonfic/database.json` for migration purposes.
+
+
+#
+
+
+
+#### Run the migrations
+```
+docker exec -t almatar_loyalty_app npx sequelize-cli db:migrate 
+```
+
+
+> `CronJob`: after running the migrations you can start the coron job by changing the value of `CRONJOB` environmental variable to be `active`,
+> only if needed, after that rebuild the application by using `docker-compose up --build`
+
+
+
+
+----
+#
+
+## Running the tests
+
+#
+#### Run the test migrations
+```
+docker exec -t almatar_loyalty_app npx sequelize-cli db:migrate 
+```
+
+#### Run the test suites
+
 ```
 docker exec -t almatar_loyalty_app npm run test
 ```
 
 
-## API End-Points
 
-#### You can find API documentations on this end-point
-
-```
-{localhost:3000}/api-docs/
-```
 
 

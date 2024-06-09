@@ -1,6 +1,5 @@
 import {Request} from "express"
 import jwt from "jsonwebtoken"
-import {number, string} from "joi";
 
 const getAuthEmail = (req: Request) : string => {
     let authHeader : any = req.headers['authorization']

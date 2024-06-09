@@ -35,7 +35,7 @@ module.exports = {
         allowNull: false
       },
       status: {
-        type: Sequelize.ENUM('PENDING', 'REJECTED', 'CONFIRMED'),
+        type: Sequelize.ENUM('pending', 'rejected', 'confirmed'),
         allowNull: true
       },
       createdAt: {
@@ -51,5 +51,6 @@ module.exports = {
 
   async down (queryInterface, Sequelize) {
     await queryInterface.dropTable('transactions');
+    await queryInterface.dropAllEnums();
   }
 };

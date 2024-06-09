@@ -8,20 +8,25 @@ services:
     ports:
       - "${SERVER_PORT:-3000}:3000"
     depends_on:
-      - mongodb
-  mongodb:
-    container_name: almatar_loyalty_mongodb
-    image: mongo:latest
+      - postgres_db
+  postgres_db:
+    container_name: almatar_loyalty_postgres
+    image: postgres:latest
+    restart: always
     networks:
       - almatar_network
     ports:
-      - "${MONGO_PORT:-27017}:27017"
+      - "${DB_PORT:-5432}:5432"
+    environment:
+      POSTGRES_USER: "${DB_USERNAME:-almatar}"
+      POSTGRES_PASSWORD: "${DB_PASSWORD:-almatar}"
+      POSTGRES_DB: "${DB_NAME:-almatar}"
     volumes:
-      - almatar_mongodb_data_container:/data/db
+      - almatar_postgres_data_container:/var/lib/postgresql/data
 
 networks:
   almatar_network:
     driver: bridge
 
 volumes:
-  almatar_mongodb_data_container:
+  almatar_postgres_data_container:

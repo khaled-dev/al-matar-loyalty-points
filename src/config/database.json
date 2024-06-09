@@ -1,9 +1,9 @@
 {
   "development": {
-    "username": "postgres",
-    "password": "test",
-    "database": "postgres",
-    "host": "172.17.0.2",
+    "username": "almatar",
+    "password": "almatar",
+    "database": "almatar",
+    "host": "postgres_db",
     "dialect": "postgres",
     "port": "5432"
   },
