@@ -9,20 +9,22 @@ export interface TransactionDTO {
 }
 
 
-const create = async (transactionObject: TransactionDTO , user : User)  : Promise<Transaction>    => {
-
-    console.log(transactionObject)
+const create = async (transactionObject: TransactionDTO, user : User, t)  : Promise<Transaction>    => {
 
     const transaction : Transaction = await  Transaction.create({
         senderId: transactionObject.senderId,
         receiverId: transactionObject.receiverId,
         points: transactionObject.points,
-    } );
+    }, {transaction: t});
 
-    user.points -= transactionObject.points;
-    await user.save()
+    const pointsMin : number = user.points - transactionObject.points;
 
-    return Transaction.findByPk(transaction.id, { include: [{ all: true }] })
+    await User.update({ points: pointsMin }, {
+        where: {id: user.id},
+        transaction: t
+    })
+
+    return Transaction.findByPk(transaction.id, { include: [{ all: true }], transaction: t })
 }
 
 export default {create}

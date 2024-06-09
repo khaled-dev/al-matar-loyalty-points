@@ -44,22 +44,31 @@ const listTransactions = async (req: Request, res: Response) => {
 const createTransaction = async (req: ICreateTransactionRequest, res: Response) => {
     const { receiverEmail, points } = req.body;
     const authEmail : string = authService.getAuthEmail(req)
-    
-    // TODO: handle concarancy
+
     if (receiverEmail === authEmail) return response.validation(res, {receiverEmail}, 'The transaction is made to yourself!!', 422)
 
-    const sender : User = await User.findOne({ where: {email: authEmail} });
-    if (sender.points < points) return response.validation(res, {points}, 'You dont have enough points.', 422)
+    await db.transaction(async t => {
+        // Use "pessimistic" lock
+        // "Select for update" will add a 'pessimistic lock' on the selected row.
+        // It is To prevent any other attempt to select it until the transaction is commited or rolled back
+        const sender: User = await User.findOne({
+            where: {email: authEmail},
+            lock: t.LOCK.UPDATE,
+            transaction: t
+        });
 
-    const receiver : User = await User.findOne({ where: {email: receiverEmail} });
+        if (sender.points < points) return response.validation(res, {points}, 'You dont have enough points.', 422)
 
-    const transaction : Transaction  = await transactionFactory.create({
-        senderId: sender.id,
-        receiverId: receiver.id,
-        points: points,
-    }, sender)
+        const receiver: User = await User.findOne({where: {email: receiverEmail}, transaction: t});
 
-    response.success(res, transactionView.one(transaction), 'Points transferred successfully', 201)
+        const transaction: Transaction = await transactionFactory.create({
+            senderId: sender.id,
+            receiverId: receiver.id,
+            points: points,
+        }, sender, t)
+
+        return response.success(res, transactionView.one(transaction), 'Points transferred successfully', 201)
+    })
 };
 
 /**
