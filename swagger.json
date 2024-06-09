@@ -139,16 +139,6 @@
       "put": {
         "summary": "Confirm transaction",
         "operationId": "confirmTransaction",
-        "parameters": [
-          {
-            "name": "transactionId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -181,16 +171,6 @@
       "put": {
         "summary": "Reject transaction",
         "operationId": "rejectTransaction",
-        "parameters": [
-          {
-            "name": "transactionId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
         "requestBody": {
           "required": true,
           "content": {
