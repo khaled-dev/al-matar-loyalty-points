@@ -1,32 +1,37 @@
 import request from 'supertest';
 import app from '../../src/server';
-import User, {UserModel} from "../../src/models/user.model";
+import User  from "../../src/models/user.model";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import mongoose from "mongoose";
-import {MongoMemoryServer} from "mongodb-memory-server";
+import db from "../../src/config/db";
+import Transaction from "../../src/models/transaction.model";
+import authService from "../../src/services/auth.service";
 
 describe('user', () => {
 
-    let mongoServer;
-
     beforeAll(async () => {
-        mongoServer = await MongoMemoryServer.create();
-        const uri = await mongoServer.getUri();
-        await mongoose.connect(uri);
+        await db.sync({ force: true });
+    });
 
+    afterEach(async () => {
+        await User.destroy({ where: {} });
+        await Transaction.destroy({ where: {} });
+    });
 
+    afterAll(async () => {
+        await db.close();
     });
 
     describe('points', () => {
         it('should get his points number', async () => {
-            const user : UserModel = await User.create({
+            const user : User = await User.create({
                 name: 'transaction Sender',
                 email: 'transactionSender@email.com',
                 password: await bcrypt.hash('password', 10),
+                points: 500,
             })
 
-            let userToken = jwt.sign({ _id: user._id, email: user.email }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_TOKEN_EXPIRE })
+            const userToken = authService.signAuth({ id: user.id, email: user.email })
 
             const res = await request(app)
                 .get('/user/points')
@@ -37,15 +42,6 @@ describe('user', () => {
             expect(res.body.message).toEqual('User Points')
             expect(res.body.data.Points).toEqual(500)
         })
-    })
-
-    afterEach(async () => {
-        await User.deleteMany()
-    })
-
-    afterAll( async () => {
-        await mongoose.disconnect()
-        await mongoServer.stop()
     })
 })
 

@@ -1,18 +1,22 @@
 import request from 'supertest';
 import app from '../../src/server';
-import User, {UserModel} from "../../src/models/user.model";
+import User from "../../src/models/user.model";
 import bcrypt from 'bcrypt';
-import mongoose from 'mongoose';
-import {MongoMemoryServer} from "mongodb-memory-server";
+import db from '../../src/config/db'
 
 
 describe('Authentication', () => {
-    let mongoServer;
 
     beforeAll(async () => {
-        mongoServer = await MongoMemoryServer.create();
-        const uri = await mongoServer.getUri();
-        await mongoose.connect(uri);
+        await db.sync({ force: true });
+    });
+
+    afterEach(async () => {
+        await User.destroy({ where: {} });
+    });
+
+    afterAll(async () => {
+        await db.close();
     });
 
     describe('register', () => {
@@ -82,7 +86,7 @@ describe('Authentication', () => {
     describe('login', () => {
         it('should login an existing user', async () => {
             const password = 'password1232'
-            const user : UserModel = await User.create({
+            const user : User = await User.create({
                 name: 'Test User2',
                 email: 'test2@example.com',
                 password: await bcrypt.hash(password, 10),
@@ -145,12 +149,4 @@ describe('Authentication', () => {
         })
     })
 
-    afterEach(async () => {
-        await User.deleteMany()
-    })
-
-    afterAll( async () => {
-        await mongoose.disconnect()
-        await mongoServer.stop()
-    })
 })

@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken'
 import response from "../http/response"
 import Transaction, {TransactionStatus} from "../models/transaction.model"
 import db from "../config/db"
+import authService from "../services/auth.service";
 
 interface IRegisterRequest extends Request {
     body: {
@@ -44,7 +45,7 @@ const register = async (req: IRegisterRequest, res: Response) => {
         await user.save()
     })
 
-    const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET!, { expiresIn: process.env.JWT_TOKEN_EXPIRE })
+    const token = authService.signAuth({ id: user.id, email: user.email })
 
     response.success(res, {'access-token': token}, 'Registration successful', 201)
 }
@@ -58,7 +59,7 @@ const login = async (req: ILoginRequest, res: Response) => {
 
     if (! validPassword) return response.error(res, {}, 'Invalid Credentials', 401)
 
-    const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET!, { expiresIn: process.env.JWT_TOKEN_EXPIRE })
+    const token = authService.signAuth({ id: user.id, email: user.email })
 
     response.success(res, {'access-token': token}, 'Logged in successful')
 }

@@ -57,14 +57,12 @@ if (process.env.NODE_ENV !== 'test') {
 }
 
 if (process.env.NODE_ENV !== 'test') {
-    try {
-        app.listen(
-            config.server.port,
-            () => {
-                Logging.info(`Server is running on port ${config.server.port}`)
-            }
-        )
-    } catch (e) {Logging.error(e)}
+    app.listen(
+        config.server.port,
+        () => {
+            Logging.info(`Server is running on port ${config.server.port}`)
+        }
+    )
 }
 
 // Export for testing
